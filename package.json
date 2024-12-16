@@ -1,0 +1,20 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "description": "My first backend project",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "nodemon src/app.js"
+  },
+  "keywords": [
+    "js",
+    "nodejs",
+    "expressjs"
+  ],
+  "author": "Anand Kumar singh",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
