@@ -66,7 +66,7 @@ const ap = ex();
 
 [.listen]
  >>// when you call this .listen method you have to pass a port number on which you want your application to be running on and second parameter it takes is a callback function which runs when server is working :: 
- 
+
  >>it is used to give the port number on which you want to run your server on
   ap.listen( portnumber , function()=>{
     cosole.log("something")
@@ -78,3 +78,22 @@ npm i -g nodemon
 it is used so that when we do some changes in our file server automatically get refershed whenver any changes made to the code 
 >>we dont need to refresh the server again and again 
 
+# info about node_modules
+>> you can easily reinstall your all node_module if you have package.json >> package.json has dependencies
+npm i
+
+<!-----------------------------------------------------lec 17--------------------------------------------------------->
+>>initialising local repository 
+git init 
+git add .
+<!-- git add . means all the files-->
+git commit -am "build the sever"
+git status
+>>now pushing to remote repository 
+git remote add origin https://github.com/Anand-kumar-63/Node-project.git
+<!--push to origin main branch-->
+git push -u origin main
+
+# postman
+>> intsall postman to test the api's
+>> we can test our api calls on postman
