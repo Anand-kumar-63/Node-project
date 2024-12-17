@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/app.js",
-    "test": "nodemon src/app.js"
+    "test": "nodemon src/app.js",
+    "middle": "nodemon src/Middleware.js"
   },
   "keywords": [
     "js",

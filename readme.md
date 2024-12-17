@@ -126,8 +126,25 @@ res.send("hey there it is your dyn");
 
 {
   Multiple route handlers
-  
+  next() and errors
+  r1,r2,[r3,r4],r5
+  concept of middleware and actual request handler and why do we need middleware..
+  how express.js  handles request backend
+  difference between app.use and app.all
+  write a dummy auth middleware for admin 
+  write a dummy auth middleware for all user routes
+  error handeling using middleware err argumnet using app.use("/",(err,req,res,next)=>{}) and you should always place it towards the end..
 }
+# errors 
+- when server is not returning the response
+app.use(()=>{
+
+})
+- client will request the server and server dont have any response>> so request will just hanging around for some time
+ there will be a timeout after sometime and req gets timedout >> there is nothing in the code to handle that req
+- we have to send the response back 
+
+# multiple route handlers
 - [.use] is a request handler it can handle any find of rq be it >>get ,post ,patch ,put ,delete
 - one argument is route and second one is a route handler >> route handler have three params (request , respose , next)>>next for other route handlers
 - you can have multiple route handlers in a req handler >> you can have as many route handlers as you want..
@@ -146,5 +163,57 @@ ap.use(("/user")
   res.send(")
 }); 
 
-- if you already got the response from the route handler still you call next>> client will get the response and server client connection get closed now when second route handler tries to send the response it will show an error
+- if you already got the response from the route handler still you call next>> client will get the response and socket connection btw server ..... client get closed now when second route handler tries to send the response it will show an error
+
+- you can wrap all your route handlers inside an array or some of them .. it wont affect your response 
+ap.use("/ab",[r1,r2],r3,r4)
+
+- you can also make sepearate route handler using same route..
+
+# middleWares
+these route handlersr are called [middleqares]
+ap.use("/user"
+<!-- middlewares -->
+,(req,res)=>{
+hye
+}
+,
+(req,res)=>{
+hey
+}
+,(req,res)=>{
+
+}
+,(req,res)=>{
+
+},
+)
+- supose you are sending a request to the express server it takes and matches all the routes>> goes line by line to every  midedleware untill it reaches a fucntion that actually sends the response back>> and that function is called request handler >>all the in between functions are called middlewares
+ 
 - 
+app.use("/help",(req,res,next)=>{
+    <!-- res.send("hey there i am your help"); -->
+    next();
+});
+
+app.use(("/help"),(req,res,next)=>{
+  // res.send("help1");
+  console.log("help mil gyi 1");
+  next();
+},
+(req,res,next)=>{
+  console.log("help mil gyi 2");
+  // res.send("help2");
+  next();
+},
+(req,res,next)=>{
+  res.send("help3");
+  console.log("help mil gyi 3");
+},
+)
+- here request handler is the help3 others are middlewares
+
+# userAuth middleware and userAuth middle ware
+
+# errorhandling
+you can make a error handler
