@@ -67,10 +67,11 @@ const ap = ex();
 [.listen]
  >>// when you call this .listen method you have to pass a port number on which you want your application to be running on and second parameter it takes is a callback function which runs when server is working :: 
 
- >>it is used to give the port number on which you want to run your server on
-  ap.listen( portnumber , function()=>{
+ >>it is used to give the port number on which you want to run your server 
+  ap.listen( "7777" , function()=>{
     cosole.log("something")
   })
+  this server is listening on port number 7777
    
 # nodemon module
 npm i -g nodemon
@@ -97,3 +98,53 @@ git push -u origin main
 # postman
 >> intsall postman to test the api's
 >> we can test our api calls on postman
+
+# dynamic routing inside route handlers
+>>explore routes using +,(),?,* in route handlers
+app.post("/ab+ut",(req,res)=>{
+res.send("hey there it is your dyn");
+})
+
+app.post("/ab?",(req,res)=>{
+res.send("hey there it is your dyn");
+})
+
+app.post("/ab+ut",(req,res)=>{
+res.send("hey there it is your dyn");
+})
+
+app.post("/ab*t",(req,res)=>{
+res.send("hey there it is your dyn");
+})
+
+app.post("/ab/",(req,res)=>{
+res.send("hey there it is your dyn");
+})
+
+<!-------------------------------------- lec 18--------------------------------------- -->
+# Route handlers and middlewares
+
+{
+  Multiple route handlers
+  
+}
+- [.use] is a request handler it can handle any find of rq be it >>get ,post ,patch ,put ,delete
+- one argument is route and second one is a route handler >> route handler have three params (request , respose , next)>>next for other route handlers
+- you can have multiple route handlers in a req handler >> you can have as many route handlers as you want..
+- to access those multiplel route handlers there is a [next()] method given by express
+- when you are not getting the response throug first handler you can call next();>> so the server will go to next 
+
+ap.use(("/user")  
+, (req,res,next)=>{
+  <!-- res.send("dwebcbsdjkb"); -->
+  next();
+} 
+, (req, res ,next)=>{
+  res.send(")
+}
+, (req, res ,next)=>{
+  res.send(")
+}); 
+
+- if you already got the response from the route handler still you call next>> client will get the response and server client connection get closed now when second route handler tries to send the response it will show an error
+- 

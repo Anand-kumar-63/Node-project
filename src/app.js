@@ -9,7 +9,7 @@ app.use("/about",(req,res)=>{
   res.send("hey there i got you mr. /about");
 });
 
-app.get("/userinfo",(req,res)=>{
+app.get("/u/",(req,res)=>{
   res.send("hey you got the data");
 })
 
@@ -24,6 +24,24 @@ app.post("/post",(req,res)=>{
 app.use("/ab",function(req,res){
   res.send("heyy you are a gay");
 });
+
+//  a req handler can have multiple route handler
+app.use(("/help"),(req,res,next)=>{
+  // res.send("help1");
+  console.log("help mil gyi 1");
+  next();
+},
+(req,res,next)=>{
+  console.log("help mil gyi 2");
+  // res.send("help2");
+  next();
+},
+(req,res,next)=>{
+  res.send("help3");
+  console.log("help mil gyi 3");
+},
+)
+
 
 app.listen( 7777 , ()=>{
   console.log("hey your server is running succesfullyy on port 7777...")
