@@ -235,11 +235,16 @@ passowrd to my cluster -- KP6dZEUzj3OePsL2
 - mongoose.connect("mongodb+srv://anand2327cse1077:KP6dZEUzj3OePsL2@devtindercluster.2y6ga.mongodb.net/")
 - put it in a ayncs function to get the pormise to use .then and .catch
 
+# mongoose
+- Mongoose is the most popular ODM mapping library for the MongoDB database. it provides schema-based options to model the application database.
+
 # database should connect first then your app should start listen to api call
-- you should connect to your db before your post start to listen to requests>>>first connect to the db then start listening to the api calls 
+- you should connect to your db before your server start to listen to requests>>>first connect to the db then start listening to the api calls 
  >> for this you have to import the async function that is connecting the database to and call it inside app.js file after connecting to the database thenn call app.listen to start listening to the port 
 
 # scheema creation using mongoose
+- Models are defined using the Schema interface. The Schema allows you to define the fields stored in each document x along with their validation requirements and default values.
+
 - scheema basically tells about -- what all info about the user we are storing into the database
 - user can have firstname , lastname , age ,gender , profession etc
 - mongodb recommend to use camelcase in scheema
@@ -265,6 +270,28 @@ const userSchema = new  mongoose.Schema({
  }
 })
 # model("name of the collection your model is for",schema)
-const userModle = mongoose.model('user', userSchema);
+- const userModle = mongoose.model('user', userSchema);
+- To create a model with Mongoose schemas, first define a schema that outlines the structure of your data, specifying field types and validation rules. Then, use mongoose.model() to create a model from the schema, enabling interaction with the MongoDB collection.
 
 # create a "/signup" api to add some data to database and push some documnents to db
+
+
+<!------------------------------------------LEC 20------------------------------------->
+{difference between json and js object
+add express.json middleware
+make your signup api dynamic post data from the client}
+# passing dynamic data to the API
+- go to post then in request section go in body >> raw data>> json
+- we are sending the dynamic data to our server in json format >> our server cannot read it so you need a middle ware to read that data and convert it into js object and send it to the databse..
+- for this we have middelware provided by express >>[expressjson middleware]
+- what json middlewaare done > it reads the json data and converts into js objects and adds that js object back to the request object in the body now the reqeust.body is a js object 
+app.use(express.json());
+
+- we can create a new instance of a userModle by using this object 
+- now this signup API  is dynamic
+
+
+
+>>app.use handles every request that comes to our server
+  app.use(()=>{})
+  handles request for every route

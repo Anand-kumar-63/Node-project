@@ -3,6 +3,11 @@ const app = express();
 require("./config/database.js");
 const userModle = require("./models/user.js")
 const datacall  = require("./config/database.js");
+
+// middleware will work for all the routes
+app.use(express.json());
+
+
 // req handler
 // app.use("/about",(req,res)=>{
 //   res.send("hey there i got you mr. /about");
@@ -47,22 +52,26 @@ const datacall  = require("./config/database.js");
 // })
 
 app.post("/signup",async (req,res)=>{
-  // const userobj ={
-  // FirstName:"Nemesis",
-  // LastName:"NaN",
-  // Age:"69",
-  // Gender:"male",
-  // Profession:"software developer",
-  // Location:"gonda"
-  // } 
-  const user = new userModle({
-    FirstName: "Temp"
-  });
-  await user.save();
-
-  console.log(user);
-  res.send("Document is uploaded usccesfully")
-
+  // this req.body is a js object which is created by the middleware expres.json()
+  console.log(req.body);
+  // creating new instance of the usermodel
+  const user = new userModle(req.body);
+  // const user = new userModle( {
+    // FirstName:"Nemesis",
+    // LastName:"NaN",
+    // Age:"69",
+    // Gender:"male",
+    // Profession:"software developer",
+    // Location:"gonda"
+  //   } );
+  try{ 
+    await user.save();
+    res.send("data is added successfully");
+    console.log(user);
+  }
+  catch(err){
+    res.status(404).send("there is some error data is not added");
+  }
 });
 
 datacall()
