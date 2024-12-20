@@ -145,7 +145,7 @@ app.use(()=>{
 - we have to send the response back 
 
 # multiple route handlers
-- [.use] is a request handler it can handle any find of rq be it >>get ,post ,patch ,put ,delete
+- [.use] is a request handler it can handle any kind of rq be it >>get ,post ,patch ,put ,delete
 - one argument is route and second one is a route handler >> route handler have three params (request , respose , next)>>next for other route handlers
 - you can have multiple route handlers in a req handler >> you can have as many route handlers as you want..
 - to access those multiplel route handlers there is a [next()] method given by express
@@ -217,3 +217,54 @@ app.use(("/help"),(req,res,next)=>{
 
 # errorhandling
 you can make a error handler
+
+server.use("/help",(err,req,res,next)=>{
+  if(err){
+    res.status(404).send("hey there is some error");
+  }
+})
+
+
+<!-------------------------------------------------LEC 19 --------------------------------------->
+# mongodb cluster to compass connect
+passowrd to my cluster -- KP6dZEUzj3OePsL2
+
+- we are using mongoose to connect to our database >> mongoose is a very important liberary to create schemas and models 
+- install mongooose 
+- reqiure mongoose 
+- mongoose.connect("mongodb+srv://anand2327cse1077:KP6dZEUzj3OePsL2@devtindercluster.2y6ga.mongodb.net/")
+- put it in a ayncs function to get the pormise to use .then and .catch
+
+# database should connect first then your app should start listen to api call
+- you should connect to your db before your post start to listen to requests>>>first connect to the db then start listening to the api calls 
+ >> for this you have to import the async function that is connecting the database to and call it inside app.js file after connecting to the database thenn call app.listen to start listening to the port 
+
+# scheema creation using mongoose
+- scheema basically tells about -- what all info about the user we are storing into the database
+- user can have firstname , lastname , age ,gender , profession etc
+- mongodb recommend to use camelcase in scheema
+
+const userSchema = new  mongoose.Schema({
+ Firstname:{
+  type:String
+ },
+ LastName:{
+  type:String
+ },
+ Age:{
+  type:Number
+ },
+ Gender:{
+  type:String
+ },
+ Profession:{
+  type:String
+ },
+ Location:{
+  type:String
+ }
+})
+# model("name of the collection your model is for",schema)
+const userModle = mongoose.model('user', userSchema);
+
+# create a "/signup" api to add some data to database and push some documnents to db

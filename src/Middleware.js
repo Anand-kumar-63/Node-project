@@ -2,12 +2,9 @@ const express = require("express");
 const app = express();
 const  { userAuth , adminAuth } = require("./Auth/middleware.js");
 // middleware to handle User Autherisation
-app.use("/admin", adminAuth ,(req,res,next)=>{
-  res.send("hey you got the admin man now fuck you!!")
-  next();
-});
+// app.use("/admin", adminAuth);
 
-app.get("/admin/getAlldata", (req, res, next) => {
+app.get("/admin",adminAuth,(req, res, next) => {
   console.log("heyy you got all the data");
   // res.send("hey you got all the data")
   next();
