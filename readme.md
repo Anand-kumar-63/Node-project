@@ -279,7 +279,16 @@ const userSchema = new  mongoose.Schema({
 <!------------------------------------------LEC 20------------------------------------->
 {difference between json and js object
 add express.json middleware
-make your signup api dynamic post data from the client}
+make your signup api dynamic post data from the client
+create a delete user api
+get user api
+post user api
+difference between patch and put
+create a update user Api using emial id instead of userid
+read mongoose documentation for model methods
+what is option argument in model.findByIdAndUpadate
+
+}
 # passing dynamic data to the API
 - go to post then in request section go in body >> raw data>> json
 - we are sending the dynamic data to our server in json format >> our server cannot read it so you need a middle ware to read that data and convert it into js object and send it to the databse..
@@ -289,9 +298,66 @@ app.use(express.json());
 
 - we can create a new instance of a userModle by using this object 
 - now this signup API  is dynamic
+>> # insertMany documents
+insertMany:
+    This method is optimized for inserting multiple documents at once.
+    It automatically handles the array structure in req.body.
 
+# any other data which is apart from your schema will get ignored by all the API
 
-
+#
 >>app.use handles every request that comes to our server
   app.use(()=>{})
   handles request for every route
+
+# .find to find a document in the collection
+- .find({filter}) gives you [array] of all the documnets matching the filter in the collection..
+- in which collection it is going to find is decided by the userModle you created with the help of schema>>which creating the modle you passes a collection 
+
+app.get("/Profession" , async (req,res)=>{
+  const kaam = req.body.Profession;
+  try{
+    console.log(kaam);
+    const pro = await userModle.find({Profession:kaam});
+    if(pro.length>0){
+      res.send(pro);}
+      else
+      {
+        res.send(404).send("No documnet matches the filter in the collection")
+      }
+  }
+  catch(err){
+    res.status(404).send("there is no document in the collection user");
+  }
+});
+- 
+# .deleteMany
+- Deletes all of the documents that match conditions from the collection. It returns an [object] with the property deletedCount containing the number of documents deleted. Behaves like remove(), but deletes all documents that match conditions regardless of the single option.
+- from which collection its going to delete the documnet it depends upon the model we are using >> that model takes a collection name and schema 
+app.delete("/delete",async(req,res)=>{
+  // reading the data from req
+  const del = req.body.FirstName;
+  try{
+    console.log(del);
+    const delet = await userModle.deleteMany({FirstName:del});
+    if (delet.deletedCount > 0) {
+      res.send(delet);
+    } else {
+      res.status(404).send("No documents matched the filter in the collection");
+    }}
+  catch(err){
+  res.status(404).send("No document matched to the filter in the collection");   
+  }
+}) 
+# update user api 
+- updats the document using UserId 
+app.patch("/update",async(req,res)=>{
+ const upda = req.body.userId;
+ const data = req.body;
+try{
+  const update = await userModle.findByIdAndUpdate({_id:upda},data)
+  res.send(update);
+}catch(err){
+  res.status(404).send("No document matchd the filter")
+}
+})

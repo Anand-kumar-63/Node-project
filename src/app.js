@@ -1,7 +1,7 @@
 const express = require("express"); 
 const app = express();
 require("./config/database.js");
-const userModle = require("./models/user.js")
+const userModle = require("./models/userschema.js")
 const datacall  = require("./config/database.js");
 
 // middleware will work for all the routes
@@ -51,11 +51,42 @@ app.use(express.json());
 //   res,send('hey')
 // })
 
-app.post("/signup",async (req,res)=>{
-  // this req.body is a js object which is created by the middleware expres.json()
-  console.log(req.body);
-  // creating new instance of the usermodel
+
+// Api to handle request at route /signup
+
+app.post("/postdata",async(req,res)=>{
+  // req.body contains js objects
+  // console.log(req.body);  
   const user = new userModle(req.body);
+  try{ 
+      console.log(user);  
+      await user.save();
+      res.send("data is added successfully");
+    }
+    catch(err){
+      res.status(404).send("there is some error data is not added");
+    }
+})
+app.get("/signup",async (req,res,next)=>{
+  
+  // this req.body is a js object which is created by the middleware expres.json()
+  // console.log(req.body);
+  // creating new instance of the usermodel
+  // const user = new userModle(req.body);
+ 
+ 
+  // extracting the location from the request to filter the data
+  const loc = req.body.FirstName;
+  try {
+    console.log("the fristname is :",loc);
+    const finddocument = await userModle.find({FirstName:loc});
+    res.send(finddocument);
+    // next();
+  }
+  catch(err){
+    res.status(404).send("There is no documnet in tha database matching the filter");
+  }
+  // to add data to the collection passed in model
   // const user = new userModle( {
     // FirstName:"Nemesis",
     // LastName:"NaN",
@@ -64,16 +95,65 @@ app.post("/signup",async (req,res)=>{
     // Profession:"software developer",
     // Location:"gonda"
   //   } );
-  try{ 
-    await user.save();
-    res.send("data is added successfully");
-    console.log(user);
+
+  // try{ 
+  //   await user.save();
+  //   res.send("data is added successfully");
+  //   console.log(user);
+  // }
+  // catch(err){
+  //   res.status(404).send("there is some error data is not added");
+  // }
+});
+
+// handle request at route /Profession
+app.get("/Profession" , async (req,res)=>{
+  const kaam = req.body.Profession;
+  try{
+    console.log(kaam);
+    const pro = await userModle.find({Profession:kaam});
+    if(pro.length>0){
+      res.send(pro);}
+      else
+      {
+        res.send(404).send("No documnet matches the filter in the collection")
+      }
   }
   catch(err){
-    res.status(404).send("there is some error data is not added");
+    res.status(404).send("there is no document in the collection user");
   }
 });
 
+// to delete the data from the collection 
+app.delete("/delete",async(req,res)=>{
+  // reading the data from req
+  const del = req.body.FirstName;
+  try{
+    console.log(del);
+    const delet = await userModle.deleteMany({FirstName:del});
+    if (delet.deletedCount > 0) {
+      res.send(delet);
+    } else {
+      res.status(404).send("No documents matched the filter in the collection");
+    }}
+  catch(err){
+  res.status(404).send("No document matched to the filter in the collection");   
+  }
+})
+
+// api to update of the user 
+app.patch("/update",async(req,res)=>{
+ const upda = req.body.userId;
+ const data = req.body;
+try{
+  const update = await userModle.findByIdAndUpdate({_id:upda},data)
+  res.send(update);
+}catch(err){
+  res.status(404).send("No document matchd the filter")
+}
+})
+
+// databse setup
 datacall()
 .then(() =>{
   console.log("database connected succesfulyy");
