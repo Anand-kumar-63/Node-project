@@ -243,11 +243,14 @@ passowrd to my cluster -- KP6dZEUzj3OePsL2
  >> for this you have to import the async function that is connecting the database to and call it inside app.js file after connecting to the database thenn call app.listen to start listening to the port 
 
 # scheema creation using mongoose
+>>[schema]
 - Models are defined using the Schema interface. The Schema allows you to define the fields stored in each document x along with their validation requirements and default values.
-
-- scheema basically tells about -- what all info about the user we are storing into the database
+- scheema basically tells about -- what all fields about the user we are storing into the database
 - user can have firstname , lastname , age ,gender , profession etc
 - mongodb recommend to use camelcase in scheema
+>>[Models]
+- a mongoose Model is just a wrapper on the mongoose schema >> mongoose model porvides an interface[collection] to the database  for creating , quering , updating , deleting documents...
+- with the help of model we create a collection >> in which we store the document structured using schema 
 
 const userSchema = new  mongoose.Schema({
  Firstname:{
@@ -361,3 +364,46 @@ try{
   res.status(404).send("No document matchd the filter")
 }
 })
+
+<!----------------------------------------------- Lec21 --------------------------------------------->
+# data sanitisation and schema validation
+{explore the schema type options and dpocumentation 
+add require , unique , lowercase , uppercase , min , max
+add default
+create a custom validate function for gender
+put all appropriate validations on the fields of schema
+add timestams to userschema>>creation and updation
+add API level validations to patch request and sigun  post api
+add api validation for each fields 
+}
+# schema type
+- A SchemaType defines the type of data a field can store. 
+- What is a SchemaType? 
+  A SchemaType is the configuration for an individual property within a Mongoose schema.
+- The type Key
+  Each property in a schema can be defined using a specific SchemaType.
+  Built-in SchemaTypes:
+        String
+        Number
+        Date
+        Buffer
+        Boolean
+        Mixed
+        ObjectId
+        Array
+        Decimal128
+        Map
+        Schema
+        UUID
+        BigInt
+        Double
+        Int32
+Custom plugins can also introduce additional SchemaTypes
+>>[options]
+The SchemaType defines what kind of data the field stores, and the options define rules or behaviors or some constraints for that data.
+
+# properties for fields
+
+
+# timestamp 
+- when your schema creation is done you have to pass a second object 
