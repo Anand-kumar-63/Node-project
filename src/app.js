@@ -57,13 +57,15 @@ app.post("/postdata", async (req, res) => {
   const user = new userModle(req.body);
   try {
     if (!req.body.FirstName) {
-      res.status(404).send("please  enter the valid data");
+      throw new Error("Firstname is required");
     } else {
       console.log(user);
       await user.save();
+      console.log("saved");
       res.send("data is added successfully");
     }
   } catch (err) {
+    console.log("Error", err);
     res.status(404).send("there is some error data is not added");
   }
 });
@@ -136,17 +138,28 @@ app.delete("/delete", async (req, res) => {
   }
 });
 // api to update of the user
-app.patch("/update", async (req, res) => {
-  const upda = req.body.userId;
+app.patch("/update/:userId", async (req, res) => {
+  const upda = req.params?.userId;
   const data = req.body;
   try {
+    const ALLOWED_UPDATES = [
+      "userId",
+      "FirstName", "LastName","Gender","profession","Age","Location","Skills"];
+    const isallowedupdate = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+    if (!isallowedupdate) {
+     throw new Error("invalid updates");
+    }
+    if(data.Skills.length>10){
+      throw new Error("skills should be less than 10");
+    }
     console.log(data);
     const update = await userModle.findByIdAndUpdate({ _id: upda }, data);
     res.status(200).send(update);
   } catch (err) {
-    res.status(404).send("No document matchd the filter");
-  }
-});
+     res.status(404).send("there is some error in updating the data");
+  }});
 
 // databse setup
 datacall()

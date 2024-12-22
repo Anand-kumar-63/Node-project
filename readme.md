@@ -407,3 +407,41 @@ The SchemaType defines what kind of data the field stores, and the options defin
 
 # timestamp 
 - when your schema creation is done you have to pass a second object 
+
+# API level validations for patch and post APIs
+- if the user is updating the profile it can only update certain fields 
+- what are the fields a user can change 
+ >> Firstname , lastname , gender , about
+ how will you do that ??
+ >> going to vaildate the data we are getting from request body
+  
+- const ALLOWED_UPDATES = ["FirstName","LastName","Gender","profession","age","Location"]
+  // we are checking whether the user is trying to update the valid fileds or not 
+  // if not then we will send the error message
+  // we are interating over the keys of the object and checking whether the keys are valid or not 
+  const isallowedudate = object.key(data).every((k)=>ALLOWED_UPDATES.includes(k));
+
+   try {
+    const ALLOWED_UPDATES = [
+      "userId",
+      "FirstName",
+      "LastName",
+      "Gender",
+      "profession",
+      "Age",
+      "Location",
+      "Skills",
+    ];
+    const isallowedupdate = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+    if (!isallowedupdate) {
+      res.status(404).send("invalid update");
+    }
+    console.log(data);
+    const update = await userModle.findByIdAndUpdate({ _id: upda }, data);
+    res.status(200).send(update);
+  } catch (err) {
+    res.status(404).send("No document matchd the filter");
+  }});
+- you can add API level validation for each fields>> this known as data sanitisation
