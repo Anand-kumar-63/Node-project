@@ -3,7 +3,8 @@ const app = express();
 require("./config/database.js");
 const userModle = require("./models/userschema.js");
 const datacall = require("./config/database.js");
-
+const {validatetheuserdata} = require("./utils/validation.js")
+const bcrypt = require("bcryptjs");
 // middleware will work for all the routes
 app.use(express.json());
 
@@ -54,17 +55,26 @@ app.use(express.json());
 
 app.post("/postdata", async (req, res) => {
   // req.body contains js objects
-  const user = new userModle(req.body);
+  validatetheuserdata(req);
+  const {FirstName,LastName,Password,Email,Age} = req.body;
+  const PasswordHash = bcrypt.hashsync(Password,10);
+  console.log(PasswordHash);
+  const user = new userModle({
+    FirstName,
+    LastName,
+    Password:PasswordHash,
+    Email,
+    Age
+  });
+
+
   try {
-    if (!req.body.FirstName) {
-      throw new Error("Firstname is required");
-    } else {
       console.log(user);
       await user.save();
-      console.log("saved");
+      console.log("save");
       res.send("data is added successfully");
     }
-  } catch (err) {
+     catch (err) {
     console.log("Error", err);
     res.status(404).send("there is some error data is not added");
   }

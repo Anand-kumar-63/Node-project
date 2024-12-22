@@ -468,3 +468,13 @@ The SchemaType defines what kind of data the field stores, and the options defin
     })
   }
 - [validator>isURL(value)] check if the string is a URL  
+
+<!--------------------------------LEC22 ------------------------->
+# user authentification
+how password encryption is done
+- first validate the password 
+- then hash the password{using bcrypt library} - npm i bcrypt>>
+- then save the password into the database
+
+- during login there is a function in bcrypt lib to compare the stored hashed password with the entered password
+  bcrypt.compare("text password","hashed one");>>returns boolean

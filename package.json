@@ -16,6 +16,7 @@
   "author": "Anand Kumar singh",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "express": "^4.21.2",
     "mongoose": "^8.9.2",
     "nodemon": "^3.1.9",
