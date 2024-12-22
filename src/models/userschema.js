@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 // creating schema
 const userSchema = new mongoose.Schema(
   {
@@ -7,6 +8,14 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       required: true,
       maxlength: 10,
+    },
+    PhotoURL: {
+      type: String,
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error("invalid photo URL",+ value);
+        }
+      }
     },
     LastName: {
       lowercase: true,
@@ -27,6 +36,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "developer",
     },
+    Password:{
+      type:String,
+      validate(value) {
+        if (!validator.isStrongPassword(value)) {
+          throw new Error("Not a strong Password"+value);
+        }
+      }
+    },
     Location: {
       type: String,
     },
@@ -38,6 +55,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      // validate the email using validate library
+      validator(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Email in invalid");
+        }
+      },
     },
   },
   {

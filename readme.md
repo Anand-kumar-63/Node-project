@@ -375,6 +375,7 @@ put all appropriate validations on the fields of schema
 add timestams to userschema>>creation and updation
 add API level validations to patch request and sigun  post api
 add api validation for each fields 
+explore the validator library and install it use it fro password Email and URL
 }
 # schema type
 - A SchemaType defines the type of data a field can store. 
@@ -445,3 +446,25 @@ The SchemaType defines what kind of data the field stores, and the options defin
     res.status(404).send("No document matchd the filter");
   }});
 - you can add API level validation for each fields>> this known as data sanitisation
+-{we can add API level validation and db[schema] level validation }
+
+# NPM validator Lib
+
+- if you not put validations for email its gonna be created a user with that incorrect emailid 
+- there is [validator] library for checking the validation of multiple fields you dont have to write the validation manually for every fields
+- npm i validator
+ {>>syntax for validation at schema level
+  validate(value){
+        if(!validator.isEmail(value)){
+          throw new Error ("Email in invalid");
+        }} 
+ }
+- [validator.isEmail(value)] checks if the string is an Email        
+- you can validate even the photo URL to be a real URL
+>> checks is the string URL or not::
+  validate(value){
+    if(!validator>isURL(value){
+      throw new Error("invalid photo URL")
+    })
+  }
+- [validator>isURL(value)] check if the string is a URL  

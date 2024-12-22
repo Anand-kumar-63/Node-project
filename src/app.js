@@ -138,12 +138,12 @@ app.delete("/delete", async (req, res) => {
   }
 });
 // api to update of the user
-app.patch("/update/:userId", async (req, res) => {
-  const upda = req.params?.userId;
+app.patch("/update", async (req, res) => {
+  const upda = req.body.userId;
   const data = req.body;
   try {
     const ALLOWED_UPDATES = [
-      "userId",
+      "userId","Email","PhotoURL",
       "FirstName", "LastName","Gender","profession","Age","Location","Skills"];
     const isallowedupdate = Object.keys(data).every((k) =>
       ALLOWED_UPDATES.includes(k)
