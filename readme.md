@@ -574,3 +574,25 @@ signed>> 	Boolean>> 	Indicates if the cookie should be signed.
 
 
 # create auth middleware and validate the token for every API request
+- you can expire your jwt token and cookies such that after sometime user should login again
+# Handler methods of schema
+>>you can make a helper function for jwt or password verification
+--To get jwt token 
+userSchema.methods.getJWT = function(){
+  const user = this;
+  const jwtToken = jwt.sign({_id:user._id},"hulk@131974",{ expiresIn:"1d"})
+  return jwtToken;
+}
+- for password verification
+userSchema.methods.verifyPassword = async function(ReqPassword){
+  const user = this;
+  const isvalid =await bcrypt.compare(ReqPassword , user.Password);
+
+  return isvalid;
+}
+- for finding the user from userModel
+userSchema.methods.finduser = async function(em){
+const user = await userModel.findOne({Email:em});
+console.log(user);
+return user;
+}

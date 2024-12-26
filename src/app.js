@@ -98,16 +98,21 @@ app.post("/login", async (req, res) => {
   try {
     const { Email, Password } = req.body;
     //use findone instead of find >> it returns an object instead of array of objects
-    const user = await userModel.findOne({ Email: Email});
+    // const user = await userModel.findOne({ Email: Email});
+    const user = finduser(Email);
     console.log(user.Password);
     if (!user) {
       throw new Error("user is not in the db");
     } 
     else {
-      const isvaliduser = await bcrypt.compare( Password , user.Password);
+      // const isvaliduser = await bcrypt.compare( Password , user.Password);
+      const isvaliduser = user.verifyPassword(Password);
       if (isvaliduser) {
-  // this jwt token store the id of the user logged in and private key 
-     const jwtToken = jwt.sign({_id:user._id},"hulk@131974")
+      // this jwt token store the id of the user logged in and private key you have multiple options as well to pass in like expirey date and more
+    //  const jwtToken = jwt.sign({_id:user._id},"hulk@131974",{
+    //   expiresIn:"1d"
+      //  })
+        const jwtToken = user.getJWT(); 
         res.cookie("JWToken", jwtToken);
         res.send("login succesfull");   
        }
