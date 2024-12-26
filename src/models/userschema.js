@@ -7,16 +7,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       lowercase: true,
       required: true,
-      maxlength: 10,
+      maxlength: 50,
     },
-    PhotoURL: {
-      type: String,
-      validate(value) {
-        if (!validator.isURL(value)) {
-          throw new Error("invalid photo URL",+ value);
-        }
-      }
-    },
+    // PhotoURL: {
+    //   type: String,
+    //   validate(value) {
+    //     if (!validator.isURL(value)) {
+    //       throw new Error("invalid photo URL",+ value);
+    //     }
+    //   }
+    // },
     LastName: {
       lowercase: true,
       type: String,
@@ -67,6 +67,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 // creating model
-const userModle = mongoose.model("Users", userSchema);
+const userModel = mongoose.model("Users", userSchema);
 
-module.exports = userModle;
+module.exports = userModel;

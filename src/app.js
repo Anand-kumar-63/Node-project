@@ -1,12 +1,16 @@
 const express = require("express");
 const app = express();
 require("./config/database.js");
-const userModle = require("./models/userschema.js");
+const userModel = require("./models/userschema.js");
 const datacall = require("./config/database.js");
-const {validatetheuserdata} = require("./utils/validation.js")
-const bcrypt = require("bcryptjs");
+const { validatetheuserdata } = require("./utils/validation.js");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken")
+const cookieparser = require("cookie-parser");
+const {auth} = require("./Auth/userauth.js")
 // middleware will work for all the routes
 app.use(express.json());
+app.use(cookieparser());
 
 // req handler
 // app.use("/about",(req,res)=>{
@@ -54,29 +58,86 @@ app.use(express.json());
 // Api to handle request at route /signup
 
 app.post("/postdata", async (req, res) => {
-  // req.body contains js objects
-  validatetheuserdata(req);
-  const {FirstName,LastName,Password,Email,Age} = req.body;
-  const PasswordHash = bcrypt.hashsync(Password,10);
-  console.log(PasswordHash);
-  const user = new userModle({
-    FirstName,
-    LastName,
-    Password:PasswordHash,
-    Email,
-    Age
-  });
-
-
   try {
-      console.log(user);
-      await user.save();
-      console.log("save");
-      res.send("data is added successfully");
-    }
-     catch (err) {
+    const user = new userModel(req.body);
+    await user.save();
+    res.send("data is added successfully");
+    console.log(user);
+  } catch (err) {
+    res.status(404).send("there is some error data is not added");
+  }
+});
+
+app.post("/Signup", async (req, res) => {
+  // req.body contains js objects
+  try {
+    validatetheuserdata(req);
+    const { FirstName, LastName, Password, Email, Age } = req.body;
+    const PasswordHash = await bcrypt.hash(Password, 10);
+    console.log(PasswordHash);
+    // creatin new instcance of the modle
+    const user = new userModel({
+      FirstName,
+      LastName,
+      Password: PasswordHash,
+      Email,
+      Age,
+    });
+
+    console.log(user);
+    await user.save();
+    console.log("save");
+    res.send("data is added successfully");
+  } catch (err) {
     console.log("Error", err);
     res.status(404).send("there is some error data is not added");
+  }
+});
+// login authentication
+app.post("/login", async (req, res) => {
+  try {
+    const { Email, Password } = req.body;
+    //use findone instead of find >> it returns an object instead of array of objects
+    const user = await userModel.findOne({ Email: Email});
+    console.log(user.Password);
+    if (!user) {
+      throw new Error("user is not in the db");
+    } 
+    else {
+      const isvaliduser = await bcrypt.compare( Password , user.Password);
+      if (isvaliduser) {
+  // this jwt token store the id of the user logged in and private key 
+     const jwtToken = jwt.sign({_id:user._id},"hulk@131974")
+        res.cookie("JWToken", jwtToken);
+        res.send("login succesfull");   
+       }
+     }
+  } 
+  catch (err) {
+    res.send(err.message);
+  }
+});
+// get porfile
+app.get("/profile", auth , async (req, res) => {
+  try {
+    // // req.cookies is an object containing the object containing the jwt token
+    // const cookies = req.cookies;
+    // // extracting the jwt token from the object 
+    // const token = cookies?.JWToken; 
+    // if (!token) {
+    //   return res.status(401).send("Token not found");
+    // }
+    // const decodingUser = jwt.verify(token, process.env.JWT_SECRET || "hulk@131974");
+    // console.log(decodingUser);
+    // const { _id } = decodingUser;
+    // // finding the object usind the id::
+    // const user = await userModel.findById(_id)
+    const user = req.user;
+    res.send(`Logged-in user ID is:${user}`);
+  } 
+  catch (error) {
+  console.error("Error verifying token:", error.message);
+  res.status(401).send(error.message)                           ;
   }
 });
 app.get("/signup", async (req, res, next) => {
@@ -89,7 +150,7 @@ app.get("/signup", async (req, res, next) => {
   const loc = req.body.FirstName;
   try {
     console.log("the fristname is :", loc);
-    const finddocument = await userModle.find({ FirstName: loc });
+    const finddocument = await userModel.find({ FirstName: loc });
     res.send(finddocument);
     // next();
   } catch (err) {
@@ -121,7 +182,7 @@ app.get("/Profession", async (req, res) => {
   const kaam = req.body.Profession;
   try {
     console.log(kaam);
-    const pro = await userModle.find({ Profession: kaam });
+    const pro = await userModel.find({ Profession: kaam });
     if (pro.length > 0) {
       res.send(pro);
     } else {
@@ -137,7 +198,7 @@ app.delete("/delete", async (req, res) => {
   const del = req.body.FirstName;
   try {
     console.log(del);
-    const delet = await userModle.deleteMany({ FirstName: del });
+    const delet = await userModel.deleteMany({ FirstName: del });
     if (delet.deletedCount > 0) {
       res.send(delet);
     } else {
@@ -153,23 +214,33 @@ app.patch("/update", async (req, res) => {
   const data = req.body;
   try {
     const ALLOWED_UPDATES = [
-      "userId","Email","PhotoURL",
-      "FirstName", "LastName","Gender","profession","Age","Location","Skills"];
+      "userId",
+      "Email",
+      "PhotoURL",
+      "FirstName",
+      "LastName",
+      "Gender",
+      "profession",
+      "Age",
+      "Location",
+      "Skills",
+    ];
     const isallowedupdate = Object.keys(data).every((k) =>
       ALLOWED_UPDATES.includes(k)
     );
     if (!isallowedupdate) {
-     throw new Error("invalid updates");
+      throw new Error("invalid updates");
     }
-    if(data.Skills.length>10){
+    if (data.Skills.length > 10) {
       throw new Error("skills should be less than 10");
     }
     console.log(data);
     const update = await userModle.findByIdAndUpdate({ _id: upda }, data);
     res.status(200).send(update);
   } catch (err) {
-     res.status(404).send("there is some error in updating the data");
-  }});
+    res.status(404).send("there is some error in updating the data");
+  }
+});
 
 // databse setup
 datacall()
