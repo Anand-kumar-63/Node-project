@@ -11,14 +11,14 @@ const userSchema = new mongoose.Schema(
       required: true,
       maxlength: 50,
     },
-    // PhotoURL: {
-    //   type: String,
-    //   validate(value) {
-    //     if (!validator.isURL(value)) {
-    //       throw new Error("invalid photo URL",+ value);
-    //     }
-    //   }
-    // },
+    PhotoURL: {
+      type: String,
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error("invalid photo URL",+ value);
+        }
+      }
+    },
     LastName: {
       lowercase: true,
       type: String,
@@ -68,26 +68,24 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
+// creating model
+const userModel = mongoose.model("Users", userSchema);
 // to get jwt token
-userSchema.methods.getJWT = function(){
-  const user = this;
-  const jwtToken = jwt.sign({_id:user._id},"hulk@131974",{ expiresIn:"1d"})
+userSchema.methods.getJWT = function(user){
+  const user1 = user;
+  const jwtToken = jwt.sign({_id:user1._id},"hulk@131974",{ expiresIn:"1d"})
   return jwtToken;
 }
 // for verification of the Password
-userSchema.methods.verifyPassword = async function(ReqPassword){
-  const user = this;
-  const isvalid =await bcrypt.compare(ReqPassword , user.Password);
+userSchema.methods.verifyPassword = async function(givenPassword , user){
+  // const user = this;
+  const user1 = user;
+  const isvalid = await bcrypt.compare(givenPassword , user1.Password);
   return isvalid;
 }
 // for finding the user 
 userSchema.methods.finduser = async function(em){
 const user = await userModel.findOne({Email:em});
-console.log(user);
 return user;
 }
-// creating model
-const userModel = mongoose.model("Users", userSchema);
-
 module.exports = userModel;

@@ -16,28 +16,44 @@ UpdateRouter.patch("/update", auth, async (req, res) => {
 //} catch (err) {
 //  res.status(404).send("there is some error in updating the data");
 //}
-
   try {
     if(!validatetheupdatedata(req)){
       throw new error("updation unauthorised")
     }
     else{
     const loggedinuser = req.user;
-    cosole.log(loggedinuser);
-    
-    object.keys(req.body).forEach((key) => (loggedinuser[key] = req.body(key)));
-
-    console.log(loggedinuser);
-
+    Object.keys(req.body).forEach((key) => (loggedinuser[key] = req.body[key]));
     await loggedinuser.save();
     res.json({
       message: `${loggedinuser.FirstName}:updated usccesfully`,
-      saveddata: loggedinuser,
     });}
   }
    catch (error) {
     res.status(404).send("ERROR : " + error.message);
   }
 });
+
+UpdateRouter.patch("/Password", auth ,async(req,res)=>{
+  try{  const isValidToChange = validatetheupdatedata(req);
+  
+  const loggedinuser = req.user;
+      console.log(loggedinuser);
+  console.log(isValidToChange);
+
+  if(!isValidToChange){
+    throw new error("Password cannot be changed");
+  }
+  else{
+    Object.keys(req.body).forEach((key)=>(loggedinuser[key] = req.body[key]  ));
+    console.log(loggedinuser);
+    await loggedinuser.save();
+    res.send("Password Change Succesfully");
+  }
+}
+catch(err){
+  res.status(404).send(err.message);
+}
+ 
+})
 
 module.exports =  UpdateRouter ;

@@ -21,14 +21,14 @@ function validatetheupdatedata(req) {
     "FirstName",
     "LastName",
     "Gender",
+    "Password",
     "profession",
+    "_id",
     "Age",
     "Location",
     "Skills",
   ];
-  const isvalidupdatedata = Object.keys(req.body).every((k) => {
-    ALLOWED_UPDATES.includes(k);
-  });
+const isvalidupdatedata = Object.keys(req.body).every(k => ALLOWED_UPDATES.includes(k));
  return isvalidupdatedata;
 }
 module.exports = { validatetheuserdata, validatetheupdatedata };
