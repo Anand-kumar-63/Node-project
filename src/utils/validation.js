@@ -1,4 +1,4 @@
-
+const userModel = require("../models/userschema");
 const validator = require("validator");
 
 function validatetheuserdata(req) {
@@ -14,4 +14,21 @@ function validatetheuserdata(req) {
     throw new Error("Password is not strong: " + Password);
   }
 }
-module.exports = {validatetheuserdata};
+// to validate the data to get updated
+function validatetheupdatedata(req) {
+  const ALLOWED_UPDATES = [
+    "PhotoURL",
+    "FirstName",
+    "LastName",
+    "Gender",
+    "profession",
+    "Age",
+    "Location",
+    "Skills",
+  ];
+  const isvalidupdatedata = Object.keys(req.body).every((k) => {
+    ALLOWED_UPDATES.includes(k);
+  });
+ return isvalidupdatedata;
+}
+module.exports = { validatetheuserdata, validatetheupdatedata };

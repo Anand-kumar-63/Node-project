@@ -21,6 +21,7 @@ const auth = async function (req, res, next) {
       if (!user) {
         throw new Error("user object is empty");
       }
+      // this is the logged in in user 
       req.user = user;
       next();
   } 
