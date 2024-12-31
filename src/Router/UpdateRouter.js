@@ -3,6 +3,7 @@ const userModel = require("../models/userschema");
 const { validatetheupdatedata } = require("../utils/validation.js");
 const { auth } = require("../Auth/userauth");
 const UpdateRouter = express.Router();
+const brcypt = require("bcrypt")
 
 UpdateRouter.patch("/update", auth, async (req, res) => {
 
@@ -36,8 +37,11 @@ UpdateRouter.patch("/update", auth, async (req, res) => {
 UpdateRouter.patch("/Password", auth ,async(req,res)=>{
   try{  const isValidToChange = validatetheupdatedata(req);
   
+  const HashPassword = await brcypt.hash(req.body.Password,10)
+  req.body.Password = HashPassword;
+
   const loggedinuser = req.user;
-      console.log(loggedinuser);
+  console.log(loggedinuser);
   console.log(isValidToChange);
 
   if(!isValidToChange){
