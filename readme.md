@@ -832,3 +832,19 @@ const Person = mongoose.model('Person', personSchema)
 - The populate in MongoDB, particularly in the Mongoose library, serves a crucial role in resolving relationships and enhancing data retrieval efficiency. Populate in MongoDB simplifies data access and manipulation by automatically resolving references and populating the specified fields with the relevant documents. This eliminates the need for manual data linking or multiple queries, making the coding process more straightforward, improving code readability, and reducing the potential for errors. With populate in mongoDB, you can conveniently access and manipulate related data without the complexity of handling data linking and aggregation manually.
 
 read more about reference and populate --  https://mongoosejs.com/docs/populate.html
+
+
+<!----------------------------------------------LEC 27 --------------------------------------------------->
+
+When a user requests their feed, fetch users who match their preferences:
+    Match based on gender.
+    Filter by age range.
+    Calculate proximity using the Haversine formula for geolocation.
+    Exclude users they've already swiped on (keep a swiped list).
+    >>what should not be on users feed>>
+    >>user should not see [1]his own card , [2]his connections , [3]the poeple whom get ignored by me , [4]already sent the connection request
+example
+  >> if user is recently came to the platform user can see all the other users in the feed [1],2,3,4,5,6
+  >> after sending connection request to 1,2 >> now feed should discard 1,2    
+
+    
