@@ -23,6 +23,7 @@ const auth = async function (req, res, next) {
       }
       // this is the logged in in user 
       req.user = user;
+      console.log(user);
       next();
   } 
   catch (error) {

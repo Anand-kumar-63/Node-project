@@ -623,6 +623,10 @@ console.log(user);
 return user;
 }
 
+# difference between find and findOne
+find : Returns an array of all documents that match the query conditions. If no documents match, it returns an empty array.
+findOne : Returns a single document that matches the query conditions.
+
 <!--------------------------------- LEC 24 diving into the API and Express router ---------------------------------------->
 {
 explore tinder apis
@@ -665,3 +669,166 @@ const Authrouter = express.Router();
 http://expressjs.com/en/guide/routing.html#express-router
 # create API logout
 - login is token gets expire 
+
+
+<!-----------------------------------------------------LEC 25 -------------------------------------->
+# sending connection request
+- first you have to create a connectionRequest Schema >> containing senderId , recieverId , and status
+- enum: you create enum when you want to restrict user for some values >> status should only have certain values >>ignore , interested , accepted , rejected
+ >>Enums in Mongoose are particularly useful for fields that should only accept a limited number of predefined values.
+ >>Enums in Mongoose play an important role in defining fields that should only accept a limited number of predefined values. They clearly indicating the possible values for a field.
+ Status:{
+   type:String,
+   required:true,
+   #// Enum defining allowed values for the 'status' field
+   enum:{
+    values:["interested","required","accepted","rejected"],
+    message:"${value} is not valid"
+   }
+  } 
+ >>When a document is created or updated, Mongoose automatically validates the field against the defined enum values. If an invalid value is provided, Mongoose will throw a validation error.
+ >>{EXAMPLE} we creates a Mongoose model named User based on the userSchema schema. It then attempts to save a new user with the role 'superuser' which is not a valid role according to the schema's enum. As a result, a validation error will be caught and logged.
+ const User = mongoose.model('User', userSchema);
+ const newUser = new User({ role: 'superuser' });
+ newUser.save()
+  .then(() => console.log('User saved successfully'))
+  .catch(err => console.error('Error saving user:', err));
+
+- person A is sending connection request to person B and data is stored in database
+- api request from person A to person B>>
+#api for sending the connection request 
+
+- can we use the same route for interested and not interested 
+>> with the help of enum >> status 
+
+- created a requestrouter and send request to RecieverID >> creating a new instance of the connectionrequestmodel >> and saving the senderid , receiverid and status into the databse
+- we have to validate the the Status to just interested and ignore>>not more than that
+const validStatus = ["interested","ignored"]
+if(!validStatus.includes(Status)){
+  return res.status(404).send("INVALID STATUS");
+}
+- we have to check first that if there is already a connection request form A to B or from B to A>>in this case we will not allow too send request 
+>>usermodel.findone({  $or: [
+  {
+   SenderId,
+   ReciverId
+  },
+  {
+   SenderID:ReciverId,
+   ReciverId:SenderId
+  }
+]})
+# OPERATORS
+## logical operators in mongodb 
+- [$or:]or query >>The $or operator performs a logical OR operation on an array of one or more <expressions> and selects the documents that satisfy at least one of the <expressions>
+ { $or: [ { <expression1> }, { <expression2> }, ... , { <expressionN> } ] }
+- [$nor]$nor performs a logical NOR operation on an array of one or more query predicates and selects the documents that fail all the query predicates in the array. The $nor has the following syntax:
+{ $nor: [ { <expression1> }, { <expression2> }, ...  { <expressionN> } ] }
+- [$and]
+- [$not]
+
+## mongodb comparision operators 
+{$eq,$ne,$gte,$lte,$gt,$lt}
+
+##
+$exists
+$type
+- {read more about comparision opetrators}, mongodb operators
+- {read about aggregation pipeline in mongodb }
+
+
+# pre middleware in mongoose Schema 
+- Its a middleware function in mongoose schema
+- for keeping the validation of reciverid != senderid 
+- everytime it runs before saving the request {check if the receiver user is same as the current user }to the data base
+- you can write this validation at api level also
+connectionRequestSchema.pre("save",async function(next){
+const connectionRequest = this;
+if(connectionRequest.SenderId.equals(connectionRequest.ReciverId))
+{
+  throw new error("CAANNOT SEND REQUEST TO YOURSELF");
+}
+next(error);
+})
+# mongoose Schema indexing
+- if we index a particular field so it becomes a different Data structure
+- to increase the efficiency of our api
+## compound index
+>> whenever you query using multiple 
+
+<!----------------------------------------------------------- LEC 26 --------------------------------------------------------->
+# api for receivers end
+- to either accept or reject the incoming request
+- post/request/review/:status/:requestId >> req saved in the db collection that is connectionsRequest as interested for the user 
+>>first made validation of the status >> accept or reject
+>>then find the request exist or not by using Schema Model  >> reqid , loggedinuser._id , Status:interested 
+>>then update the status >> then save it
+
+# threat post vs get
+- post api >> threat to a db is that user can maliciously enter wrong info to the db >> whenever there is post api think of attacker that the attacker can something into your db server should verify everything >> every corner cases chould be checked 
+- get api >> user is getting data from the db >> server should authorise the user should be valid >> whatever data user is requesting should be allowed in his scope
+
+# api for all the requests user recieved
+>> you have to find all the requests having recieverId : loggedinuser._id , Status:"interested"
+you will get all the request sended to you that are in pending state to be accepted or rejected
+
+# api for all the connections user have
+>> you have to find all the requests having either Recieverid:loggedinuser._id or Senderid:loggedinuser._id with Status accepted
+>> when we are finding the documenst of accepted state >> user can be Either on reciever end or at the Sender end
+>>so when data will come it contain the info of both the reciever and sender due to populate >> so to show only other ends data we have to map over the array we get from the find method 
+
+{for showing the data of only the one who is on the other side of the request be it Sender Or Reciver who is sending the request and get accepted or be the one whom the user have sendded the connection request and get accepted}
+
+const data = connections.map((row)=>{
+  // we cant use == directly you are working with mongoose id not a string first you to convert it into a string [.toString()]and then compare it 
+  // or you can user [equals()] methods
+
+  if(row.Sender._id.toString()==loggedinuser._id.toString())
+  or
+  if(row.SenderId._id.equals(loggedinuser._id))
+  {
+    return row.ReciverId
+  }
+  else{
+    return row.SenderId
+  }
+})
+
+# Regferencing in mongoose Schema >> building relation between two collections  
+- lets say we have two Schemas one is course Scehma having data as ID{object id}, Name of Course{string} , Hours{number}
+and the second one is students Schema having name{string} , age{number} and course_id{ref[objectID] of particular course of Course Schema}
+{
+  _id:"jfbcdwjbcwdn",
+  name:"Deutsh lang",
+  hours:24
+}
+{
+  name:"anand Kumar singh",
+  age:20,
+  courseid:{
+    ref:jfbcdwjbcwdn
+  }
+}
+
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+
+const personSchema = Schema({
+  _id: Schema.Types.ObjectId,
+  name: String,
+  age: Number,
+  stories: [{ type: Schema.Types.ObjectId, ref: 'Story' }]
+});
+const storySchema = Schema({
+  author: { type: Schema.Types.ObjectId, ref: 'Person' },
+  title: String,
+  fans: [{ type: Schema.Types.ObjectId, ref: 'Person' }]
+});
+const Story = mongoose.model('Story', storySchema);
+const Person = mongoose.model('Person', personSchema)
+
+# populate lib in mongoose
+- Query population suppose you are fetching the data of the student and you want that course details should also fetch
+- The populate in MongoDB, particularly in the Mongoose library, serves a crucial role in resolving relationships and enhancing data retrieval efficiency. Populate in MongoDB simplifies data access and manipulation by automatically resolving references and populating the specified fields with the relevant documents. This eliminates the need for manual data linking or multiple queries, making the coding process more straightforward, improving code readability, and reducing the potential for errors. With populate in mongoDB, you can conveniently access and manipulate related data without the complexity of handling data linking and aggregation manually.
+
+read more about reference and populate --  https://mongoosejs.com/docs/populate.html

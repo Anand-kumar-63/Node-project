@@ -6,6 +6,8 @@ const AuthRouter = require("./Router/AuthRouter.js");
 const ProfileRouter = require("./Router/ProfileRouter.js");
 const UpdateRouter = require("./Router/UpdateRouter.js");  
 const chainHandler= require("./Router/chainRouter.js");
+const RequestRouter = require("./Router/RequestRouter.js");
+const userRouter = require("./Router/user.js")
 // req handler
 // app.use("/about",(req,res)=>{
 //   res.send("hey there i got you mr. /about");
@@ -135,6 +137,8 @@ app.use("/",AuthRouter);
 // route "/" means it will handle all the routes request coming to the server
 app.use("/",ProfileRouter);
 app.use("/",UpdateRouter);
+app.use("/",RequestRouter);
+app.use("/",userRouter);
 
 datacall()
   .then(() => {

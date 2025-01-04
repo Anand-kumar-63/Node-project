@@ -38,14 +38,12 @@ AuthRouter.post("/Signup", async (req, res) => {
 AuthRouter.post("/login", async (req, res) => {
   try {
     const { Email, Password } = req.body;
-    console.log("before");
     //use findone instead of find >> it returns an object instead of array of objects
     // const user = await userModel.findOne({ Email: Email});
     // const user = finduser(Email);
     // const user = await userModel.findOne({ Email: Email });
     const user = await userModel.schema.methods.finduser(Email);
     // const user = await userModel.finduser(Email);
-    console.log("after");
     console.log(user.Password);
     if (!user) {
       throw new Error("user is not in the db");
@@ -54,18 +52,21 @@ AuthRouter.post("/login", async (req, res) => {
       // const isvaliduser = await bcrypt.compare( Password , user.Password);
       const isvaliduser = await userModel.schema.methods.verifyPassword(Password,user);
       if (isvaliduser) {
-      // this jwt token store the id of the user logged in and private key you have multiple options as well to pass in like expirey date and more
-    //  const jwtToken = jwt.sign({_id:user._id},"hulk@131974",{
-    //   expiresIn:"1d"
+    // this jwt token store the id of the user logged in and private key you have multiple options as well to pass in like expirey date and more
+    // const jwtToken = jwt.sign({_id:user._id},"hulk@131974",{
+    // expiresIn:"1d"
       //  })
         const jwtToken = userModel.schema.methods.getJWT(user); 
         res.cookie("JWToken", jwtToken);
-        res.send("login succesfull");   
+        res.send({
+          message:"LOGIN SUCCESSFULL",
+          user
+        });   
        }
      }
   } 
-  catch (err) {
-    res.send(err.message);
+  catch (error) {
+    res.status(404).send(error.message);
   }
 });
 

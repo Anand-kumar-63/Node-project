@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     FirstName: {
       type: String,
       lowercase: true,
+      index:true,
       required: true,
       maxlength: 50,
     },
@@ -80,9 +81,12 @@ userSchema.methods.getJWT = function(user){
 userSchema.methods.verifyPassword = async function(givenPassword , user){
   // const user = this;
   const user1 = user;
+  console.log(user1);
   const isvalid = await bcrypt.compare(givenPassword , user1.Password);
+  console.log(isvalid);
   return isvalid;
 }
+
 // for finding the user 
 userSchema.methods.finduser = async function(em){
 const user = await userModel.findOne({Email:em});
