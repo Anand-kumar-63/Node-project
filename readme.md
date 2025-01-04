@@ -835,16 +835,41 @@ read more about reference and populate --  https://mongoosejs.com/docs/populate.
 
 
 <!----------------------------------------------LEC 27 --------------------------------------------------->
-
+# creating feed api
 When a user requests their feed, fetch users who match their preferences:
     Match based on gender.
     Filter by age range.
     Calculate proximity using the Haversine formula for geolocation.
     Exclude users they've already swiped on (keep a swiped list).
     >>what should not be on users feed>>
-    >>user should not see [1]his own card , [2]his connections , [3]the poeple whom get ignored by me , [4]already sent the connection request
+    >>user should not see [1]his own card , [2]his connections , [3]the poeple whom get ignored by user , [4]already sent the connection request
 example
   >> if user is recently came to the platform user can see all the other users in the feed [1],2,3,4,5,6
   >> after sending connection request to 1,2 >> now feed should discard 1,2    
 
+
+  - we have to find all the users that are in either pending state or accepted or rejected state >> loggedin user can be semnder or reciver
+    const hidefromfeed = await connectionRequestModel.find({
+  $or:[
+    {SendetId:loggedinuser._id},
+    {ReciverId:loggedinuser._id}
+  ]         
+  }).select("SenderId ReciverId");
     
+  - we have to make a set that contains only unique items
+  then store all those request into set after converting into string
+   const Notinclude = new Set();
+   
+hidefromfeed.forEach((req) => {
+  Notinclude.add(req.SenderId.toString());
+  Notinclude.add(req.ReciverId.toString());
+})
+
+- now find in usermodel and exclude all these users
+ const feed = await userModel.find({
+  $and:[
+    //those user which are present in usermodel whose id are not from notinclude and loggedinuser 
+   {_id: { $nin : Array.from(Notinclude) }},
+   {_id: { $ni : loggedinuser._id}}
+  ]
+}).select("_id").populate(USER_DATA_STRING)
