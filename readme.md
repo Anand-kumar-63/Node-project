@@ -11,21 +11,19 @@
  differenec between tilda^ and ~
  }
 
-
-- first npm inti >>  it will create a package.json file its kind of a index of your project
+- first npm init >>  it will create a package.json file its kind of a index of your project
 - s2
->>we have to build a server to settle connect requests
-- we will use express js to build our server
 # Express js
+>>first we have to build a server to listen to the incoming requests on the server 
+- we will use express js to build our server
 - you have to install the express into your folder 
  npm i express
-
 - node module is created 
 >>when you instal express module it downloaded all the express code and put in node_modules inside your project folder
 so that you can use it 
 
 - package-lock.json
->>
+>> the package.lock.json specifies their respective versions to ensure consistent installations in different environments.
 
 - dependencies inside [package.json]
 >>when you install any package inside your folder it just added into dependencies
@@ -37,7 +35,7 @@ so that you can use it
 >>these depedencies can also have their own dependencies all of these come from npm when we isntall a node module in our project..
 
 - # differnce between package.json and package-lock.json
->>
+>>In Node, package.json file contains the list of dependencies and scripts in a project while the package.lock.json specifies their respective versions to ensure consistent installations in different environments.
 
 - # scripts inside package.json
 >>  "scripts": {
@@ -61,12 +59,10 @@ const ap = ex();
   ap.use("/about" , ()=>{
   conseole.log("hey this is about section of your website")
    })
-
  jsut like this you can create different req handler 
 
 [.listen]
  >>// when you call this .listen method you have to pass a port number on which you want your application to be running on and second parameter it takes is a callback function which runs when server is working :: 
-
  >>it is used to give the port number on which you want to run your server 
   ap.listen( "7777" , function()=>{
     cosole.log("something")
@@ -104,7 +100,6 @@ git push -u origin main
 app.post("/ab+ut",(req,res)=>{
 res.send("hey there it is your dyn");
 })
-
 app.post("/ab?",(req,res)=>{
 res.send("hey there it is your dyn");
 })
@@ -120,12 +115,85 @@ res.send("hey there it is your dyn");
 app.post("/ab/",(req,res)=>{
 res.send("hey there it is your dyn");
 })
+
+# relative positiontioning of the midllerwares
+- then .use to handle reaquest 
+- when you type in ap.use("/",(req,res)=>{
+  result:"hey you are on the homepage"
+})
+then during client call in url you write  localhost:7000/xyz anything after the "/" request will be handled by the "/" route handler 
+- when you tyoe in ap.use("/home",(req,res)=>{
+
+})
+its all together a [different string] so request send on localhost:7000/home/dsksvnjdsbv anthing after "/home" request will get handled by the "/home" route handler 
+- thats why posiorion of the route handler is very important 
+examples
+app.use("/Signup",(req,res)=>{
+  res.send({
+       result:"Hey you are on the Signup page"
+  })
+})  
+app.use("/Login", (req , res) => {
+  res.send({ result: "hey you are on the server" })
+});
+app.use("/Home",(req,res)=>{
+  result:"hey you are on the home page"
+})
+app.use("/",(req,res)=>{
+  res.send("hey i just started the backend")
+})
+- if you put the "/" middlerware on the top so all the request will get handled by the same route handler because localhost:7000/xyz anything after the "/" request will be handled by the "/" route handler 
+
+Examples2
+app.use("/ab+ut", (req, res) => {
+  res.send("hey there it is your dyn1");
+});
+app.use("/ab/", (req, res) => {
+  res.send("hey there it is your dyn5");
+});
+app.use("/ab", (req, res) => {
+  res.send("hey there it is your dyn2");
+});
+app.use("/ab+ut", (req, res) => {
+  res.send("hey there it is your dyn3");
+});
+app.use("/ab*t", (req, res) => {
+  res.send("hey there it is your dyn4");
+});
+- see these alll the request routes are all together a different string when you call particular one it get handled by the particular handler 
+>> [ imp note: never put "/" request handler on the top of all]
+# Http method 
+- get , post , patch , put , delete
+# Http status codes
+200 , 400 , 404
+# use method and seperate http methods
+// this will only handle get http method api calls to /user
+app.get("/user",(req,res)=>{
+res.send({
+  name:"anand",
+  role:"web developer"
+})})
+// this will only handle post http method api calls to /Signup
+app.post("/Signup",(req,res)=>{
+  res.send("date saved succesfully")
+})
+// this will only handle patch hTTPmethod api calls to /updateuser
+app.patch("/updateuser",(req,res)=>{
+  res.send("user updated successfuly");
+})
+// while use method is used >> this will handle/match all the http method[get,post , patch , put , delete] api calls to test
+app.use("/test", (req, res) => {
+  res.send("hey i just started the backend");
+});
+
+# params accessing
+app.get(")
+
 # response methods
 there are various type of res.nethods like send , json , jsonp and many more 
 read more -- http://expressjs.com/en/4x/api.html#res
 <!-------------------------------------- lec 18--------------------------------------- -->
 # Route handlers and middlewares
-
 {
   Multiple route handlers
   next() and errors
@@ -137,6 +205,7 @@ read more -- http://expressjs.com/en/4x/api.html#res
   write a dummy auth middleware for all user routes
   error handeling using middleware err argumnet using app.use("/",(err,req,res,next)=>{}) and you should always place it towards the end..
 }
+
 # errors 
 - when server is not returning the response
 app.use(()=>{
@@ -151,8 +220,7 @@ app.use(()=>{
 - one argument is route and second one is a route handler >> route handler have three params (request , respose , next)>>next for other route handlers
 - you can have multiple route handlers in a req handler >> you can have as many route handlers as you want..
 - to access those multiplel route handlers there is a [next()] method given by express
-- when you are not getting the response throug first handler you can call next();>> so the server will go to next 
-
+- when you are not getting the response throug first handler you can call next() mthod ;>> so the server will go to next req handler 
 ap.use(("/user")  
 , (req,res,next)=>{
   <!-- res.send("dwebcbsdjkb"); -->
@@ -164,16 +232,12 @@ ap.use(("/user")
 , (req, res ,next)=>{
   res.send(")
 }); 
-
-- if you already got the response from the route handler still you call next>> client will get the response and socket connection btw server ..... client get closed now when second route handler tries to send the response it will show an error
-
 - you can wrap all your route handlers inside an array or some of them .. it wont affect your response 
-ap.use("/ab",[r1,r2],r3,r4)
-
+ap.use("/ab",[r1,r2],r3,r4) 
 - you can also make sepearate route handler using same route..
 
 # middleWares
-these route handlersr are called [middleqares]
+these route handlersr are called [middlewares]
 ap.use("/user"
 <!-- middlewares -->
 ,(req,res)=>{
@@ -191,7 +255,6 @@ hey
 },
 )
 - supose you are sending a request to the express server it takes and matches all the routes>> goes line by line to every  midedleware untill it reaches a fucntion that actually sends the response back>> and that function is called request handler >>all the in between functions are called middlewares
- 
 - 
 app.use("/help",(req,res,next)=>{
     <!-- res.send("hey there i am your help"); -->
@@ -215,9 +278,53 @@ app.use(("/help"),(req,res,next)=>{
 )
 - here request handler is the help3 others are middlewares
 
-# userAuth middleware and userAuth middle ware
+## Erros faced during using next() method
+{error 1}
+- if you already got the response from the route handler still you call next>> client will get the response and socket connection btw server ..... client get closed now when second route handler tries to send the response it will show an error
+Example1
+app.get("/user2",
+  (req,res,next)=>{
+   res.send("hey you got the response")
+   console.log("hey first response is sent")
+   next();
+  },
+  (req,res)=>{
+  console.log("second response sent")
+  res.send("second response")
+  <!-- this will show an error because socket connection is alreADY -->
+  }
+)
+{error 2}
+while you call next method to next route handler while the first never sent a response >> so express expects a response from the second handler but if the hanlder dont have any respone then req will hangon for a while and the request will get timeout
+Example2
+app.get("/user2",
+  (req,res,next)=>{
+   console.log("hey first response is sent")
+   next();
+  },
+  (req,res)=>{
+  console.log("second response sent")
+  }
+)
+{error 3}
+when you even call the next method in the last routehandler itself so experss expects another routehandler afte that but there is no one so in reponse you willl get an error
+app.get("/user2",
+  (req,res,next)=>{
+   console.log("hey first response is sent")
+   next();
+  },
+  (req,res,next)=>{
+  console.log("second response sent")
+  next();
+  }
+)
 
-# errorhandling
+# job of the request srever 
+suppose you are sending the request to express server the job of the server to check all the fucntino app.xyz("marching route") one by one and sends back the response
+
+# userAuth middleware 
+
+# errorhandling {err method}
 you can make a error handler
 
 server.use("/help",(err,req,res,next)=>{
@@ -835,6 +942,11 @@ read more about reference and populate --  https://mongoosejs.com/docs/populate.
 
 
 <!----------------------------------------------LEC 27 --------------------------------------------------->
+{
+  create feed api 
+  explote query operators $ne , $nin etc
+  add pagination in api
+}
 # creating feed api
 When a user requests their feed, fetch users who match their preferences:
     Match based on gender.
@@ -873,3 +985,13 @@ hidefromfeed.forEach((req) => {
    {_id: { $ni : loggedinuser._id}}
   ]
 }).select("_id").populate(USER_DATA_STRING)
+
+# Pagination  page & skip
+for skiping 0 page and limit is 10 users
+/feed?page=1&limit=10 >> 1-10 >> skip(0)&limit(10)
+
+for skiping 1 page and limit is 10 users
+/feed?page=2&limit=10 >> 11-20 >> skip(10)&limit(10)
+
+for skiping 2 page and limit is 10 users
+/feed?page=3&limit=10 >> 21-30 >> skip(20)&limit(10) >> it will print users from 21-30 skipping 20 first users
