@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const userModel = require("../models/userschema.js");
 const finduser = require("../models/userschema.js");
 const AuthRouter = express.Router();
+const cors = require("cors")
 //this express.json converts json into js object 
 AuthRouter.use(express.json());
 // req.body is a js object which is created by the middleware expres.json()
@@ -28,7 +29,7 @@ AuthRouter.post("/Signup", async (req, res) => {
     console.log(user);
     await user.save();
     console.log("save");
-    res.send("data is added successfully");
+    res.json({message:"data is added successfully",user});
   } catch (err) {
     console.log("Error", err);
     res.status(404).send("there is some error data is not added");
@@ -52,16 +53,9 @@ AuthRouter.post("/login", async (req, res) => {
       // const isvaliduser = await bcrypt.compare( Password , user.Password);
       const isvaliduser = await userModel.schema.methods.verifyPassword(Password,user);
       if (isvaliduser) {
-    // this jwt token store the id of the user logged in and private key you have multiple options as well to pass in like expirey date and more
-    // const jwtToken = jwt.sign({_id:user._id},"hulk@131974",{
-    // expiresIn:"1d"
-      //  })
         const jwtToken = userModel.schema.methods.getJWT(user); 
         res.cookie("JWToken", jwtToken);
-        res.send({
-          message:"LOGIN SUCCESSFULL",
-          user
-        });   
+        res.send(user);   
        }
      }
   } 
@@ -70,4 +64,15 @@ AuthRouter.post("/login", async (req, res) => {
   }
 });
 
-module.exports = AuthRouter;
+AuthRouter.post("/logout", async(req,res)=>{ 
+  const cookie = req.cookies;
+  // to clear the cookie during logout 
+  // res.clearCookie("JWTtoken");
+  res.cookie("JWTtoken", null ,{
+    expires: new Date(Date.now())
+  })
+  res.send("Logged out succesfull");
+})
+
+
+module.exports = {AuthRouter , };

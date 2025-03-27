@@ -227,7 +227,6 @@ res.send("hey i just started the backend");
 app.get(")
 
 # response methods
-
 there are various type of res.nethods like send , json , jsonp and many more
 read more -- http://expressjs.com/en/4x/api.html#res
 
@@ -459,7 +458,6 @@ res.status(400).send("ERROR ADDING THE DATA:" + err.message)
 # extra
 
 ## chianable route handlers for a route path
-
 - app.route()
 - you can handle multiple requests at a particular route and send multiple response for a particular request
 - You can create chainable route handlers for a route path by using app.route(). Because the path is specified at a single location, creating modular routes is helpful, as is reducing redundancy and typos.
@@ -869,15 +867,20 @@ signed>> Boolean>> Indicates if the cookie should be signed.
 
 - you can expire your jwt token and cookies such that after sometime user should login again
 
-# Handler methods of schema
+# Mongoose Schemamethods or handler methods
 
 > > you can make a helper function for jwt or password verification
-> > --To get jwt token
-> > userSchema.methods.getJWT = function(){
-> > const user = this;
-> > const jwtToken = jwt.sign({\_id:user.\_id},"hulk@131974",{ expiresIn:"1d"})
-> > return jwtToken;
-> > }
+- To get jwt token
+  userSchema.methods.getJWT = function(){
+  const user = this;
+ //this keyword represents the model instance >> this keyword only works in simple function dont use arrow function here.. 
+  const jwtToken = jwt.sign({\_id:user.\_id},"hulk@131974",{ expiresIn:"1d"})
+  return jwtToken;
+  }
+
+how to use in login
+const token = user.getJWT()
+we can use directly use these in any api request
 
 - for password verification
   userSchema.methods.verifyPassword = async function(ReqPassword){
@@ -885,6 +888,7 @@ signed>> Boolean>> Indicates if the cookie should be signed.
   const isvalid =await bcrypt.compare(ReqPassword , user.Password);
   return isvalid;
   }
+
 - for finding the user from userModel
   userSchema.methods.finduser = async function(em){
   const user = await userModel.findOne({Email:em});
@@ -935,42 +939,70 @@ const Authrouter = express.Router();
 - read more about express routing
   http://expressjs.com/en/guide/routing.html#express-router
 
-# create API logout
-- login is token gets expire
+- group all the same type of apis and make seperate routers for all this
+like above there is a Authentication Router{group of different apis} , Profile router , connection request Router , User Router
+- Whenever  Building a big project list down all the apis and make group of together of similar apis>> code will be much cleaner
 
+- use express.Router to create different Routes >> like profile Router will handle   
+  all these routes
+  -Get/profile
+  -patch/profile/update
+  -patch/profile/password/update
+  -patch/profile/Email/update
+  
+  >> the login of getting the profile will be written in Profile Router , and logic of updating the profile will be written in profile Router  
+
+# create API logout
+- In logout token gets expire when you click on logout button
+What will be the logic of logout api give back 
+- when you login you put your emailId and password
+- login api checks for user in the database and 
+
+authrouter.post("/logout", async(req,res)=>{ 
+  const cookie = req.cookies;
+  res.cookie("JWTtoken", null ,{
+    expires: new Date(Date.now());
+  })
+  res.send();
+})
+or 
+  // to clear the cookie during logout 
+  // res.clearCookie("JWTtoken");
 <!-----------------------------------------------------LEC 25 -------------------------------------->
+
+#note :  { can use enum to validate fields instead of using validator }
+by using enum we can define limited values for a fields
 
 # sending connection request
 
 - first you have to create a connectionRequest Schema >> containing senderId , recieverId , and status
-- enum: you create enum when you want to restrict user for some values >> status should only have certain values >>ignore , interested , accepted , rejected
+- status >> enum: you create enum when you want to restrict user for some values >> status should only have certain values >>ignore , interested , accepted , rejected
+  >> Enums in Mongoose are particularly useful for fields that should only accept a limited number of predefined values.
+  >> Enums in Mongoose play an important role in defining fields that should only accept a limited number of predefined values. They clearly indicating the possible values for a field.
 
-  > > Enums in Mongoose are particularly useful for fields that should only accept a limited number of predefined values.
-  > > Enums in Mongoose play an important role in defining fields that should only accept a limited number of predefined values. They clearly indicating the possible values for a field.
-  > > Status:{
-  > > type:String,
-  > > required:true,
-  > > #// Enum defining allowed values for the 'status' field
-  > > enum:{
-  > > values:["interested","required","accepted","rejected"],
-  > > message:"${value} is not valid"
-  > > }
-  > > }
-  > > When a document is created or updated, Mongoose automatically validates the field against the defined enum values. If an invalid value is provided, Mongoose will throw a validation error.
-  > > {EXAMPLE} we creates a Mongoose model named User based on the userSchema schema. It then attempts to save a new user with the role 'superuser' which is not a valid role according to the schema's enum. As a result, a validation error will be caught and logged.
-  > > const User = mongoose.model('User', userSchema);
-  > > const newUser = new User({ role: 'superuser' });
-  > > newUser.save()
-  > > .then(() => console.log('User saved successfully'))
-  > > .catch(err => console.error('Error saving user:', err));
+  >> Status:{
+  >>  type:String,
+  >>  required:true,
+  >>  #// Enum defining allowed values for the 'status' field
+  >>  enum:{
+  >>  values:["interested","required","accepted","rejected"],
+  >>  message:"${value} is not valid"
+  >> }
+
+  >> When a document is created or updated, Mongoose automatically validates the field against the defined enum values. If an invalid value is provided, Mongoose will throw a validation error.
+  >> {EXAMPLE} we creates a Mongoose model named User based on the userSchema schema. It then attempts to save a new user with the role 'superuser' which is not a valid role according to the schema's enum. As a result, a validation error will be caught and logged.
+
+  >> const User = mongoose.model('User', userSchema);
+  >> const newUser = new User({ role: 'superuser' });
+  >> newUser.save()
+  >> .then(() => console.log('User saved successfully'))
+  >> .catch(err => console.error('Error saving user:', err));
 
 - person A is sending connection request to person B and data is stored in database
 - api request from person A to person B>>
   #api for sending the connection request
-
 - can we use the same route for interested and not interested
-
-  > > with the help of enum >> status
+  >> with the help of enum >> status
 
 - created a requestrouter and send request to RecieverID >> creating a new instance of the connectionrequestmodel >> and saving the senderid , receiverid and status into the databse
 - we have to validate the the Status to just interested and ignore>>not more than that
@@ -979,18 +1011,18 @@ const Authrouter = express.Router();
   return res.status(404).send("INVALID STATUS");
   }
 - we have to check first that if there is already a connection request form A to B or from B to A>>in this case we will not allow too send request
-  > > usermodel.findone({ $or: [
-  > > {
-  > > SenderId,
-  > > ReciverId
-  > > },
-  > > {
-  > > SenderID:ReciverId,
-  > > ReciverId:SenderId
-  > > }
-  > > ]})
+  >> usermodel.findone({ $or: [
+  >>  {
+  >>  SenderId,
+  >>  ReciverId
+  >>  },
+  >>  {
+  >>  SenderID:ReciverId,
+  >>  ReciverId:SenderId
+  >>  }
+  >> ]})
 
-# OPERATORS
+# MONGODB OPERATORS
 
 ## logical operators in mongodb
 
@@ -1001,41 +1033,73 @@ const Authrouter = express.Router();
 - [$and]
 - [$not]
 
-## mongodb comparision operators
+## Mongodb comparision operators
 
 {$eq,$ne,$gte,$lte,$gt,$lt}
 
-##
+## Element operator
 
 $exists
 $type
 
+## Evaluation operator  
+-- $mod
+ Select documents where the value of a field divided by a divisor has the specified remainder. That is, $mod performs a modulo operation to select documents. The first argument  is the dividend, and the second argument is the remainder.
+ { field: { $mod: [ divisor, remainder ] } }
+--$expr
+ Allows the use of expressions within a query predicate.
+ { $expr: { <expression> } }
+
+Example--
+db.monthlyBudget.insertMany( [
+   { _id : 1, category : "food", budget : 400, spent : 450 },
+   { _id : 2, category : "drinks", budget : 100, spent : 150 },
+   { _id : 3, category : "clothes", budget : 100, spent : 50 },
+   { _id : 4, category : "misc", budget : 500, spent : 300 },
+   { _id : 5, category : "travel", budget : 200, spent : 650 }
+] )
+The following operation uses $expr to find documents where the spent amount exceeds the budget:
+db.monthlyBudget.find( { $expr: { $gt: [ "$spent" , "$budget" ] } } )
+
 - {read more about comparision opetrators}, mongodb operators
+https://www.mongodb.com/docs/manual/reference/operator/query/
 - {read about aggregation pipeline in mongodb }
 
 # pre middleware in mongoose Schema
-
 - Its a middleware function in mongoose schema
-- for keeping the validation of reciverid != senderid
-- everytime it runs before saving the request {check if the receiver user is same as the current user }to the data base
-- you can write this validation at api level also
-  connectionRequestSchema.pre("save",async function(next){
-  const connectionRequest = this;
-  if(connectionRequest.SenderId.equals(connectionRequest.ReciverId))
-  {
-  throw new error("CAANNOT SEND REQUEST TO YOURSELF");
-  }
-  next(error);
+- for keeping the validation of reciverid != senderid.
+- everytime it runs before saving the Connectionrequest or when you trying to save the new instance of a user model in Routehandler , thats why it is called [pre]save {check if the receivers userId is same as the current userId }
+- [note]:{whenever you are writing a Schema method or Schema function always wrap it inside a normal function not an arrow function.}
+- you can write this validation at api level also using equal to operator ...
+
+  connectionRequestSchema.pre("save"{this save is kind of like an event handler},async function(next){
+    const connectionRequest = this;
+    if(connectionRequest.SenderId.equals(connectionRequest.ReciverId))
+    {
+    throw new error("CANNOT SEND REQUEST TO YOURSELF");
+    }
+    next(error);  // because it is a kind of middleware 
   })
 
 # mongoose Schema indexing
-
-- if we index a particular field so it becomes a different Data structure
 - to increase the efficiency of our api
+- when the database becomes big it is so dificult to find any document in it by findone function Schema >> lets say there are millions of people requesting each other >> so in database there are millions of documents 
+- if db is indexed the api becomes faster >> because if it is not indexed It Will go One by One to each document to search for a particular field and then the api becomes slow
+indexing should be done on that field using whome the searching is made like emailid >>[ {unique:true or index :true} in the schema fields]
+or
+## Compound indexing
+you can also use Schema mehods to do indexing for a particular field 
+Schemaname.index({fromUserid: 1 or -1});
+<!-- now this query [usermodel.findOne({ FromUserId : cjdshvidvidnvikdn })] becomes very very fast  -->
+<!-- But to make this query make [usermodel.findOne({FromUserId :djfcjasbck , TouserId:dsdhvcjasbcvs})] -->
+you have to include 
+Schemaname.index({fromuserId:1 , Touserid:1})
+- now even if you have millions of documents in your database the api will be very fast
+
+
 
 ## compound index
-
-> > whenever you query using multiple
+>> whenever you query using multiple
 
 <!----------------------------------------------------------- LEC 26 --------------------------------------------------------->
 

@@ -2,12 +2,14 @@ const express = require("express");
 const app = express();
 require("./config/database.js");
 const datacall = require("./config/database.js");
-const AuthRouter = require("./Router/AuthRouter.js");
+const{ AuthRouter} = require("./Router/AuthRouter.js");
 const ProfileRouter = require("./Router/ProfileRouter.js");
 const UpdateRouter = require("./Router/UpdateRouter.js");  
 const chainHandler= require("./Router/chainRouter.js");
 const RequestRouter = require("./Router/RequestRouter.js");
 const userRouter = require("./Router/user.js")
+const cors = require("cors");
+
 // req handler
 // app.use("/about",(req,res)=>{
 //   res.send("hey there i got you mr. /about");
@@ -131,6 +133,12 @@ const userRouter = require("./Router/user.js")
 
 // databse setup
 // 
+
+
+app.use(cors({
+  ref: "http://localhost:5173/",
+  credentials:true
+}));
 
 app.use("/",chainHandler);
 app.use("/",AuthRouter);

@@ -10,9 +10,9 @@ function validatetheuserdata(req) {
   if (!validator.isEmail(Email)) {
     throw new Error("Invalid Email" + Email);
   }
-  if (!validator.isStrongPassword(Password)) {
-    throw new Error("Password is not strong: " + Password);
-  }
+  // if (!validator.isStrongPassword(Password)) {
+  //   throw new Error("Password is not strong: " + Password);
+  // }
 }
 // to validate the data to get updated
 function validatetheupdatedata(req) {

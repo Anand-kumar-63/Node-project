@@ -20,7 +20,7 @@ ProfileRouter.get("/profile", auth , async (req, res) => {
     // // finding the object usind the id::
     // const user = await userModel.findById(_id)
     const user = req.user;
-    res.send(`Logged-in user ID is:${user}`);
+    res.json(user);
   } 
   catch (error) {
   console.error("Error verifying token:", error.message);

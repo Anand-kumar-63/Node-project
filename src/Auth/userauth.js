@@ -1,4 +1,4 @@
-const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken")
 const userModel = require("../models/userschema");
 
 const auth = async function (req, res, next) {
@@ -7,7 +7,7 @@ const auth = async function (req, res, next) {
     console.log(cookies);
     const token  = cookies?.JWToken;
     if (!token) {
-      throw new Error("token is invalid");
+      res.status(401).send("Please Login!");
     }
 
     const decodetoken = await jwt.verify(token,process.env.JWT_SECRET || "hulk@131974");
@@ -23,7 +23,7 @@ const auth = async function (req, res, next) {
       }
       // this is the logged in in user 
       req.user = user;
-      console.log(user);
+      console.log(user);  
       next();
   } 
   catch (error) {

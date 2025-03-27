@@ -41,11 +41,13 @@ const userSchema = new mongoose.Schema(
     },
     Password:{
       type:String,
-      validate(value) {
-        if (!validator.isStrongPassword(value)) {
-          throw new Error("Not a strong Password"+value);
-        }
-      }
+      required:true,
+      
+      // validate(value) {
+      //   if (!validator.isStrongPassword(value)) {
+      //     throw new Error("Not a strong Password"+value);
+      //   }
+      // }
     },
     Location: {
       type: String,

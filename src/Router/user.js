@@ -59,6 +59,11 @@ userRouter.get("/feed",auth,async(req,res)=>{
 try{
   const loggedinuser = req.user;
   // array of user connections 
+
+  const Page = req.params.page;
+  const Limit = req.params.limit;
+  const skipPage = (Page-1)*Limit
+
   const hidefromfeed = await connectionRequestModel.find({
   $or:[
     {SendetId:loggedinuser._id},
@@ -80,7 +85,7 @@ const feed = await userModel.find({
    {_id: { $nin : Array.from(Notinclude) }},
    {_id: { $ne : loggedinuser._id}}
   ]
-}).select("_id").populate(USER_DATA_STRING)
+}).select("_id").populate(USER_DATA_STRING).skip(skipPage).limit(Limit)
 
 res.json({
   message:"USERS FEED",
